@@ -16,11 +16,17 @@ async function main() {
   console.log("Database Connected");
 }
 // -------------- multer storage --------
-const upload = multer({
-    storage: multer.memoryStorage(),
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "image-uploads/admins/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
 });
 
-// const upload = multer({ storage: storage });
+const upload = multer({ storage: storage });
 // --------------------------------------------
 
 app.use(express.json());
@@ -28,6 +34,7 @@ app.use(cors(
   origin = ["http://localhost:5173/", "http://localhost:5174/",
   ],
 ));
+
 
 app.use("/api/admin", upload.single("image"), require("./routes/adminRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
