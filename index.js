@@ -35,10 +35,6 @@ app.use(cors(
   ],
 ));
 
-app.get("/", (req, res) => {
-  res.json({ message: "Server Create" });
-});
-
 app.use("/api/admin", upload.single("image"), require("./routes/adminRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use(
@@ -47,7 +43,12 @@ app.use(
   require("./routes/productRoute"),
 );
 app.use("/api/reservation", require("./routes/reservationRoute"));
-app.use("/image-uploads", express.static(path.join(__dirname, "uploads")));
+
+
+app.get("/", (req, res) => {
+  res.json({ message: "Server Create" });
+});
+
 
 // ----------------------------------------------
 app.listen(5000, () => {
