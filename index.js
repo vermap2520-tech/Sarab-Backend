@@ -16,17 +16,11 @@ async function main() {
   console.log("Database Connected");
 }
 // -------------- multer storage --------
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
+const upload = multer({
+    storage: multer.memoryStorage(),
 });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 // --------------------------------------------
 
 app.use(express.json());
@@ -43,6 +37,7 @@ app.use(
   require("./routes/productRoute"),
 );
 app.use("/api/reservation", require("./routes/reservationRoute"));
+app.use("/image-uploads", express.static(path.join(__dirname, "uploads")));
 
 
 app.get("/", (req, res) => {
