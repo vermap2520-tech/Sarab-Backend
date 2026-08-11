@@ -18,7 +18,7 @@ async function main() {
 // -------------- multer storage --------
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "image-uploads/admins/");
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now();
@@ -44,7 +44,7 @@ app.use(
   require("./routes/productRoute"),
 );
 app.use("/api/reservation", require("./routes/reservationRoute"));
-app.use("/image-uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 app.get("/", (req, res) => {
