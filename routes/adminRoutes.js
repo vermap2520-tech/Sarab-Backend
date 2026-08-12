@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const multer = require("multer");
-const upload = multer({ dest: "image-uploads/admins/" });
+const upload = multer({ dest: "image-uploads/" });
 
 const {
   adminLogin,

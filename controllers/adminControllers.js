@@ -55,7 +55,7 @@ const updateAdmin = async (req, res) => {
     const updatedAdmin = await Admin.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true },
+      { returnDocument: "after" },
     );
     if (!updatedAdmin) {
       return res.status(404).json({
