@@ -38,13 +38,9 @@ app.use(cors(
 
 app.use("/api/admin", upload.single("image"), require("./routes/adminRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
-app.use(
-  "/api/product",
-  upload.single("image"),
-  require("./routes/productRoute"),
-);
+app.use("/api/product", upload.single("image"), require("./routes/productRoute"));
 app.use("/api/reservation", require("./routes/reservationRoute"));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/image-uploads", express.static(path.join(__dirname, "uploads")));
 
 
 app.get("/", (req, res) => {

@@ -3,7 +3,7 @@ const Product = require("../models/productModel");
 
 const createProduct = async (req, res) => {
   try {
-    const { title, image, description, category, price, stock, discount } = req.body;
+    const { title, image, description, category, price, quantity, discount } = req.body;
     console.log(req.body);
 
     const createPr = new Product({
@@ -11,7 +11,7 @@ const createProduct = async (req, res) => {
       description: description,
       category: category,
       price: price,
-      stock: stock,
+      quantity: quantity,
       discount: discount || 0,
       image: req.file ? req.file.filename : "",
     });
@@ -21,9 +21,10 @@ const createProduct = async (req, res) => {
     res.status(201).json({
       data: saveProduct,
       success: true,
-      message: "success create a product",
+      message: "Product created Sucessfully",
     });
   } catch (error) {
+    console.log("Create Product Error:", error)
     res.status(500).json({
       success: false,
       message: error.message,
@@ -51,6 +52,7 @@ const delProduct = async (req, res) => {
       message: "Product deleted successfully",
     });
   } catch (error) {
+    console.log("Delete Product Error:", error)
     res.status(500).json({
       success: false,
       message: error.message,
@@ -64,9 +66,10 @@ const getAllProduct = async (req, res) => {
     res.json({
       data: getproducts,
       success: true,
-      message: "fetch all products",
+      message: "Products fetch successfully",
     });
   } catch (error) {
+    console.log("Get All Products Error:", error);
     res.json({
       success: false,
       message: error.message,
@@ -76,12 +79,26 @@ const getAllProduct = async (req, res) => {
 // ------------------------------------------------------------------------------
 const updateProduct = async (req, res) => {
   try {
-    const id = req.params.id;
+    const {id} = req.params;
+    const { title, description, category, price, quantity, discount } = req.body;
+    const updateData = { title, description, category, price, discount, quantity };
     console.log(id);
 
-    const updateProduct = await Product.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
+
+    console.log("ID", id);
+    console.log("Body", req.body);
+    console.log("file", req.file);
+    
+
+    const updateProduct = await Product.findByIdAndUpdate(id, updateData,
+      {
+        returnDocument: "after",
+        runValidators: true,
+      }
+    );
 
     if (!updateProduct) {
       return res.status(404).json({
@@ -90,12 +107,14 @@ const updateProduct = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       data: updateProduct,
       success: true,
       message: "Product updated successfully",
     });
   } catch (error) {
+    console.log("Update Product Error:", error);
+    
     res.status(500).json({
       success: false,
       message: error.message,
@@ -105,9 +124,9 @@ const updateProduct = async (req, res) => {
 // -----------------------------------------------------------------------------
 
 const getSingleProduct = async (req, res) => {
-  console.log(req.params.id);
   try {
-    const product = await Product.findById(req.params.id);
+    const { id } = req.params;
+    const product = await Product.findById(id);
 
     if (!product) {
       return res.status(404).json({
@@ -118,9 +137,10 @@ const getSingleProduct = async (req, res) => {
     res.json({
       data: product,
       success: true,
-      message: "fetch single product",
+      message: "fetch single product successfully",
     });
   } catch (error) {
+    console.log("Get Single Product Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
@@ -130,7 +150,7 @@ const getSingleProduct = async (req, res) => {
 // -----------------------------------------------------------------------------
 const getProductByCategory = async (req, res) => {
   try {
-    const category = req.params.category;
+    const category = req.params;
     const products = await Product.find({ category: category });
 
     if (products.length === 0) {
@@ -146,6 +166,7 @@ const getProductByCategory = async (req, res) => {
       message: "Products fetched by category",
     });
   } catch (error) {
+    console.log("Category Product Error:", error);
     res.status(500).json({
       success: false,
       message: error.message,
