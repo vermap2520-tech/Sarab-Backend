@@ -41,17 +41,71 @@ const getSingleAdmin = async (req, res) => {
 };
 
 // -----------------------------------------------------------------------------
+const addAdmin = async (req, res) => {
+  try {
+    console.log("Body:", req.body);
+    console.log("File:", req.file);
+
+    const { fullname, email, password, role } = req.body;
+    // Validation
+    if (!fullname || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide fullname, email and password"
+      })
+    }
+
+    // Check existing email
+    const existingAdmin = await Admin.findOne({ email });
+
+    if (existingAdmin) {
+      return res.status(400).json({
+        success: false,
+        message: "Admin already exists with this email",
+      });
+    }
+
+    // Create admin
+    const admin = await Admin.create({
+      fullname,
+      email,
+      password,
+      image: req.file ? req.file.filename : "",
+      role: role || "admin",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Admin added successfully",
+      data: {
+        _id: admin._id,
+        fullname: admin.fullname,
+        email: admin.email,
+        image: admin.image,
+        role: admin.role,
+      },
+    });
+
+  } catch (error) {
+    console.log("Add Admin Error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+}
+
+// -----------------------------------------------------------------------------
 
 const updateAdmin = async (req, res) => {
   try {
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password, role } = req.body;
     const updateData = { fullname, email };
-    if (password) {
-      updateData.password = password;
-    }
-    if (req.file) {
-      updateData.image = req.file.filename;
-    }
+    if (password) { updateData.password = password; }
+    if (role) { updateData.role = role; }
+    if (req.file) { updateData.image = req.file.filename; }
+
     const updatedAdmin = await Admin.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -235,10 +289,11 @@ const isSuperAdmin = async (req, res, next) => {
 };
 
 module.exports = {
-  adminLogin,
-  registerAdmin,
   getAllAdmin,
   getSingleAdmin,
+  addAdmin,
+  registerAdmin,
+  adminLogin,
   updateAdmin,
   deleteAdmin,
   isSuperAdmin
