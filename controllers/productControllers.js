@@ -4,14 +4,16 @@ const Product = require("../models/productModel");
 const createProduct = async (req, res) => {
   try {
     const { title, image, description, category, price, quantity, discount } = req.body;
-    console.log(req.body);
+
+    console.log("Body", req.body);
+    console.log("File", req.file);
 
     const createPr = new Product({
-      title: title,
-      description: description,
-      category: category,
-      price: price,
-      quantity: quantity,
+      title,
+      description,
+      category,
+      price,
+      quantity,
       discount: discount || 0,
       image: req.file ? req.file.filename : "",
     });
@@ -79,19 +81,20 @@ const getAllProduct = async (req, res) => {
 // ------------------------------------------------------------------------------
 const updateProduct = async (req, res) => {
   try {
-    const {id} = req.params;
+    const { id } = req.params;
     const { title, description, category, price, quantity, discount } = req.body;
-    const updateData = { title, description, category, price, discount, quantity };
-    console.log(id);
-
-    if (req.file) {
-      updateData.image = req.file.filename;
-    }
 
     console.log("ID", id);
     console.log("Body", req.body);
     console.log("file", req.file);
-    
+
+    const updateData = { title, description, category, price, quantity, discount: discount || 0 };
+    console.log(id);
+
+    // Update image only if a new image was uploaded
+    if (req.file) {
+      updateData.image = req.file.filename;
+    }
 
     const updateProduct = await Product.findByIdAndUpdate(id, updateData,
       {
@@ -114,7 +117,7 @@ const updateProduct = async (req, res) => {
     });
   } catch (error) {
     console.log("Update Product Error:", error);
-    
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -150,7 +153,9 @@ const getSingleProduct = async (req, res) => {
 // -----------------------------------------------------------------------------
 const getProductByCategory = async (req, res) => {
   try {
-    const category = req.params;
+    const { category } = req.params;
+    console.log("Category:", category);
+
     const products = await Product.find({ category: category });
 
     if (products.length === 0) {
@@ -160,7 +165,7 @@ const getProductByCategory = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(200).json({
       data: products,
       success: true,
       message: "Products fetched by category",

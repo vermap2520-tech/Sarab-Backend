@@ -30,9 +30,9 @@ const upload = multer({ storage: storage });
 // --------------------------------------------
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors(
-  origin = ["http://localhost:5173/", "http://localhost:5174/", 
-  ],
+  origin = ["http://localhost:5173/", "http://localhost:5174/",],
 ));
 
 
@@ -40,6 +40,7 @@ app.use("/api/admin", upload.single("image"), require("./routes/adminRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/product", upload.single("image"), require("./routes/productRoute"));
 app.use("/api/reservation", require("./routes/reservationRoute"));
+app.use("/api/contact", require("./routes/contactRoute"));
 app.use("/image-uploads", express.static(path.join(__dirname, "uploads")));
 
 
