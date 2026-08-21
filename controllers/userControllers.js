@@ -1,4 +1,5 @@
 const User = require("../models/userModel");
+const jwt = require("jsonwebtoken");
 
 // ----------------- User Register ----------------------
 const userRegister = async (req, res) => {
@@ -71,9 +72,17 @@ const userLogin = async (req, res) => {
       });
     }
 
+    const token = jwt.sign({
+      userId: user._id,
+    },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7D" }
+    )
+
     res.status(200).json({
       success: true,
       message: "Login successful",
+      token,
       data: user,
     });
   } catch (error) {
@@ -152,7 +161,7 @@ const updateUser = async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message,
-      message:"User Update Failed"
+      message: "User Update Failed"
     });
   }
 };

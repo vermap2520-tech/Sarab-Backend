@@ -4,8 +4,10 @@ const app = express();
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-
 const mongoose = require("mongoose");
+const dotenv = require('dotenv').config();
+
+// console.log(dotenv);
 
 main().catch((err) => console.log(err));
 
@@ -32,7 +34,12 @@ const upload = multer({ storage: storage });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(
-  origin = ["http://localhost:5173/", "http://localhost:5174/",],
+  origin = [
+    "http://localhost:5173/",
+    "http://localhost:5174/",
+    "https://shrab-frontend.vercel.app/",
+    "https://sarab-admin.vercel.app/"
+  ],
 ));
 
 

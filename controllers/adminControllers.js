@@ -1,4 +1,5 @@
 const Admin = require("../models/adminModel");
+const jwt = require("jsonwebtoken");
 
 const getAllAdmin = async (req, res) => {
   try {
@@ -165,6 +166,13 @@ const adminLogin = async (req, res) => {
       });
     }
 
+    const token = jwt.sign({
+      userId: admin._id
+    },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7D" }
+    )
+
     res.status(200).json({
       success: true,
       message: admin.role === "superadmin"
@@ -176,6 +184,7 @@ const adminLogin = async (req, res) => {
         email: admin.email,
         image: admin.image,
         role: admin.role,
+        token,
       },
     });
   } catch (error) {
